@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>eFootball Lig</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#07080c;--card:#11141d;--card2:#171b27;--gold:#d4af37;--gold2:#f5d77a;--line:rgba(212,175,55,.25);--text:#ece7da;--muted:#9a9484;--danger:#e5534b;--ok:#4cc38a}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:#07080c}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.5;min-height:100vh;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font-family:inherit}
+button{touch-action:manipulation}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+#fx{position:fixed;inset:0;z-index:300;pointer-events:none}
+#app{position:relative;z-index:1}
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(700px 380px at 50% -5%,color-mix(in srgb,var(--gold) 20%,transparent),transparent 70%)}
+.boot{padding:40px 16px;text-align:center;color:var(--gold2);font:600 16px system-ui}
+.wrap{max-width:960px;margin:0 auto;padding:0 14px 130px}
+.hero{text-align:center;padding:26px 0 12px}
+.crest{width:68px;height:68px;margin:0 auto 6px;display:block;filter:drop-shadow(0 0 16px color-mix(in srgb,var(--gold) 60%,transparent));animation:float 4s ease-in-out infinite;cursor:pointer}
+@keyframes float{50%{transform:translateY(-6px) rotate(2deg)}}
+.eyebrow{letter-spacing:.38em;font-size:10px;color:var(--gold);text-transform:uppercase;font-weight:600}
+h1{font-family:'Cinzel',Georgia,serif;font-weight:800;margin:8px 0 6px;font-size:clamp(28px,8.5vw,56px);line-height:1.1;letter-spacing:.03em;background:linear-gradient(90deg,var(--gold),var(--gold2),#fff6d6,var(--gold2),var(--gold));background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:-250% 0}}
+.sub{color:var(--muted);margin:0 auto;font-size:14px}
+.divider{height:1px;margin:16px auto 0;width:min(480px,80%);background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.nav{position:sticky;top:0;z-index:30;display:flex;gap:6px;justify-content:center;padding:10px 14px;margin:0 -14px;background:rgba(7,8,12,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,175,55,.12);overflow-x:auto}
+.tab{border:1px solid var(--line);background:rgba(212,175,55,.05);color:var(--gold2);padding:9px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;min-height:40px;white-space:nowrap;transition:.2s}
+.tab.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405;border-color:transparent;box-shadow:0 0 18px -4px var(--gold)}
+.banner{margin:16px 0 0;padding:12px 16px;border-radius:14px;font-size:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 18%,transparent),transparent);border:1px solid var(--line);display:flex;gap:10px;overflow:hidden;position:relative}
+.banner::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);animation:sweep 5s infinite}
+@keyframes sweep{to{left:110%}}
+.champ{margin:16px 0 0;padding:18px;text-align:center;border-radius:18px;border:1px solid var(--gold);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 22%,transparent),transparent);animation:pulseb 2.4s infinite}
+@keyframes pulseb{50%{box-shadow:0 0 36px -6px var(--gold)}}
+.champ .t{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase}
+.champ .n{font-family:'Cinzel',serif;font-size:26px;font-weight:800;color:var(--gold2);margin-top:4px}
+.sec-title{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin:26px 0 12px;display:flex;align-items:center;gap:12px}
+.sec-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.view{animation:fade .45s ease both}
+.fade-in{animation:fade .5s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.btn{border:1px solid var(--gold);background:transparent;color:var(--gold2);padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;min-height:44px;transition:.2s}
+.btn:active{transform:scale(.97);background:rgba(212,175,55,.18)}
+.btn.primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405;border-color:transparent}
+.btn.danger{border-color:rgba(229,83,75,.6);color:var(--danger)}
+.btn.sm{padding:6px 11px;font-size:12px;border-radius:9px;min-height:34px}
+.btn:disabled{opacity:.45}
+input,select,textarea{width:100%;background:#0a0c12;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:16px;outline:none;min-height:44px}
+input[type=color]{padding:3px;height:44px}
+input[type=checkbox]{width:22px;height:22px;min-height:0}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.15)}
+textarea{resize:vertical;min-height:90px}
+select{appearance:auto}
+.hint{font-size:12px;color:var(--muted);margin:6px 0 0}
+.table-wrap{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+table{border-collapse:collapse;width:100%;table-layout:fixed}
+th,td{padding:11px 2px;text-align:center;font-size:14px}
+th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);background:rgba(212,175,55,.08);font-weight:700}
+.c-rank{width:38px}.c-n{width:34px}.c-p{width:48px}
+th.nm,td.nm{text-align:left;padding-left:6px}
+td.nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+tbody tr{border-top:1px solid rgba(255,255,255,.06);cursor:pointer;transition:background .2s;animation:fade .5s ease both}
+tbody tr:hover{background:rgba(212,175,55,.07)}
+tbody tr.top1{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 18%,transparent),transparent)}
+.rank{font-family:'Cinzel',serif;color:var(--gold);font-weight:800}
+.pts{font-weight:800;color:var(--gold2);font-size:16px}
+.form{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle}
+.form i{width:7px;height:7px;border-radius:50%;display:block;background:var(--ok)}
+.form i.l{background:var(--danger)}
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:14px}
+.legend{font-size:11.5px;color:var(--muted);margin:10px 4px 0}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;position:relative;overflow:hidden;padding:14px 16px;margin-bottom:10px}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7}
+.week{font-family:'Cinzel',serif;color:var(--gold);font-size:13px;letter-spacing:.2em;margin:18px 0 8px}
+.match{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:12px 14px}
+.match .tm{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.match .tm.r{text-align:right}
+.match .tm.w{color:var(--gold2)}
+.score{font-family:'Cinzel',serif;font-weight:800;font-size:20px;background:rgba(212,175,55,.1);border:1px solid var(--line);padding:4px 14px;border-radius:10px;text-align:center;min-width:76px}
+.score.vs{font-size:13px;color:var(--muted);font-family:'Inter'}
+.badge{display:block;font-size:10px;color:var(--gold);letter-spacing:.1em;text-align:center;margin-top:3px;font-family:'Inter'}
+.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.lrow{padding:10px 0;border-top:1px dashed rgba(255,255,255,.08)}
+.lrow:first-child{border-top:0}
+.lrow .top{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.lrow .top b{color:var(--gold2)}
+.news .d{font-size:11px;color:var(--muted);margin-bottom:4px}
+.news.pin{border-color:var(--gold)}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stat div{background:rgba(212,175,55,.07);border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center}
+.stat b{display:block;font-size:20px;color:var(--gold2);font-family:'Cinzel',serif}
+.stat span{font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:40px}
+.foot button{background:none;border:0;color:var(--muted);cursor:pointer;font:inherit;text-decoration:underline;padding:10px}
+.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px;animation:blink 1.4s infinite}
+.live.off{background:var(--muted);animation:none}
+@keyframes blink{50%{opacity:.25}}
+.fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;gap:8px}
+.fab .btn{background:rgba(13,15,22,.95);box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;z-index:100;padding:14px;overflow:auto;animation:fade .25s}
+.dialog{width:min(400px,100%);background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--gold);border-radius:20px;padding:22px;box-shadow:0 30px 80px -10px #000,0 0 60px -15px var(--gold)}
+.dialog h2{font-family:'Cinzel',serif;color:var(--gold2);margin:0 0 6px;font-size:20px}
+.dialog p{color:var(--muted);font-size:13px;margin:0 0 12px}
+.dialog .err{color:var(--danger);font-size:13px;min-height:18px;margin:8px 0}
+.dialog .btns{display:flex;gap:10px;margin-top:10px}.dialog .btns .btn{flex:1}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--gold);padding:12px 16px;border-radius:12px;z-index:400;font-size:14px;box-shadow:0 10px 40px rgba(0,0,0,.6);max-width:calc(100% - 28px);text-align:center;animation:fade .3s}
+/* PANEL */
+.panel{position:fixed;inset:0;z-index:120;background:var(--bg);display:flex;flex-direction:column;animation:fade .25s}
+.panel .ph{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:rgba(13,15,22,.98)}
+.panel .ph .ttl{font-family:'Cinzel',serif;color:var(--gold2);font-weight:800;flex:1;font-size:15px}
+.panel .pt{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid rgba(212,175,55,.1)}
+.panel .pb{flex:1;overflow:auto;padding:14px 12px 120px;max-width:760px;width:100%;margin:0 auto}
+.f{margin-bottom:12px}.f label{display:block;font-size:11px;letter-spacing:.1em;color:var(--gold);text-transform:uppercase;margin-bottom:4px;font-weight:700}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ed{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.ed .r{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.sw{display:flex;align-items:center;gap:10px;font-size:14px}
+.dotd{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px}
+.dotd.dirty{background:var(--gold);animation:blink 1s infinite}
+@media(min-width:600px){th,td{padding:14px 6px;font-size:15px}th{font-size:11px}.c-n{width:56px}.c-p{width:72px}.c-rank{width:56px}.hero{padding:44px 0 18px}.crest{width:84px;height:84px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas><div class="glow"></div><canvas id="fx"></canvas>
+<script>
+window.onerror=function(m,s,l){var a=document.getElementById('app');if(a)a.innerHTML='<div class="boot">Hata: '+String(m)+' (satır '+l+')</div>';};
+</script>
+<div id="app"><div class="boot">⚽ Yükleniyor…</div></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============ AYAR: canlı senkron için Firebase Realtime Database adresi ============
+   Boş bırakırsan veriler sadece o cihazda (tarayıcıda) saklanır.
+   Dolduracaksan şu biçimde yaz:  https://PROJE-ADI-default-rtdb.firebaseio.com/lig.json  */
+var DB_URL = '';
+/* ================================================================================ */
+
+var LS_KEY = 'efl_lig_v2', SS_ADMIN = 'efl_admin';
+function uid(){return 'i'+Math.random().toString(36).slice(2,8)}
+var P1=uid(),P2=uid(),P3=uid(),P4=uid();
+var DEFAULT = {
+  title:'eFootball LİG', subtitle:'Puan durumu, fikstür ve istatistikler', season:'Sezon 1',
+  announcement:'Yeni sezon başladı! Maç saatini rakibinle netleştir.', showAnnouncement:true,
+  accent:'#d4af37', sound:true, particles:true, champion:'', passHash:'',
+  players:[{id:P1,name:'Oyuncu 1',emoji:'🦁',adj:0},{id:P2,name:'Oyuncu 2',emoji:'🐺',adj:0},{id:P3,name:'Oyuncu 3',emoji:'🦅',adj:0},{id:P4,name:'Oyuncu 4',emoji:'🐉',adj:0}],
+  fixtures:[{id:uid(),week:1,home:P1,away:P2,hs:0,as:0,method:'90',pw:'',done:false,when:''},{id:uid(),week:1,home:P3,away:P4,hs:0,as:0,method:'90',pw:'',done:false,when:''}],
+  scorers:[], news:[{id:uid(),text:'Lig sitesi yayında! 🎉',date:Date.now(),pin:true}], updatedAt:1
+};
+var state = norm(JSON.parse(JSON.stringify(DEFAULT)));
+var ui = {tab:'table'}, admin=false, dirty=false, online=false, atab='genel', panelEl=null;
+try{admin=sessionStorage.getItem(SS_ADMIN)==='1'}catch(e){}
+
+function norm(s){
+  ['players','fixtures','scorers','news'].forEach(function(k){ if(!s[k]) s[k]=[]; else if(!Array.isArray(s[k])) s[k]=Object.keys(s[k]).map(function(i){return s[k][i]}); });
+  var d=DEFAULT; for(var k in d){ if(s[k]===undefined) s[k]=(typeof d[k]==='object'?JSON.parse(JSON.stringify(d[k])):d[k]); }
+  if(!s.updatedAt) s.updatedAt=1; return s;
+}
+function lsGet(){try{var t=localStorage.getItem(LS_KEY);return t?JSON.parse(t):null}catch(e){return null}}
+function lsSet(){try{localStorage.setItem(LS_KEY,JSON.stringify(state))}catch(e){}}
+
+/* ============ yardımcılar ============ */
+function h(tag,attrs,kids){
+  var el=document.createElement(tag);
+  if(attrs)for(var k in attrs){
+    var v=attrs[k];
+    if(k==='class')el.className=v; else if(k==='text')el.textContent=v;
+    else if(k==='value')el.value=v;
+    else if(k==='checked')el.checked=!!v;
+    else if(k.indexOf('on')===0)el.addEventListener(k.slice(2),v);
+    else if(v!==false&&v!=null)el.setAttribute(k,v);
+  }
+  (kids||[]).forEach(function(c){if(c!=null&&c!==false)el.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  return el;
+}
+function P(id){for(var i=0;i<state.players.length;i++)if(state.players[i].id===id)return state.players[i];return null}
+function pname(id){var p=P(id);return p?((p.emoji?p.emoji+' ':'')+p.name):'—'}
+function toast(m){var t=h('div',{class:'toast',text:m});document.body.appendChild(t);setTimeout(function(){t.remove()},3200)}
+function fmt(ts){try{return new Date(ts).toLocaleString('tr-TR',{dateStyle:'medium',timeStyle:'short'})}catch(e){return ''}}
+function hash(str){
+  if(window.crypto&&crypto.subtle&&window.TextEncoder)
+    return crypto.subtle.digest('SHA-256',new TextEncoder().encode('efl:'+str)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')});
+  var x=5381;for(var i=0;i<str.length;i++)x=((x<<5)+x+str.charCodeAt(i))|0;return Promise.resolve('d'+x);
+}
+function mix(hex,pct){var n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;
+  function m(c){return Math.round(c+(255-c)*pct)}return 'rgb('+m(r)+','+m(g)+','+m(b)+')'}
+function applyTheme(){var r=document.documentElement.style;r.setProperty('--gold',state.accent);r.setProperty('--gold2',mix(state.accent,.45))}
+
+/* ============ SES ============ */
+var AC;
+function ac(){if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(f,t,d,type,v){if(!state.sound)return;var c=ac();if(!c)return;
+  var o=c.createOscillator(),g=c.createGain(),s=c.currentTime+(t||0);
+  o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+  g.gain.exponentialRampToValueAtTime(v||.12,s+.015);g.gain.exponentialRampToValueAtTime(.0001,s+d);
+  o.connect(g);g.connect(c.destination);o.start(s);o.stop(s+d+.03)}
+var SFX={
+  click:function(){tone(720,0,.06,'triangle',.08)},
+  tab:function(){tone(520,0,.07,'triangle',.09);tone(780,.06,.09,'triangle',.09)},
+  ok:function(){[523,659,784,1047].forEach(function(f,i){tone(f,i*.08,.25,'sine',.11)})},
+  err:function(){tone(170,0,.22,'sawtooth',.07);tone(130,.12,.28,'sawtooth',.07)},
+  whistle:function(){tone(2300,0,.16,'sine',.07);tone(2600,.18,.35,'sine',.07)},
+  fanfare:function(){[392,392,392,523,659,784].forEach(function(f,i){tone(f,i*.12,.3,'square',.06)})}
+};
+document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('button');if(t&&!t.dataset.nosound)SFX.click()},true);
+
+/* ============ ARKA PLAN + KONFETİ ============ */
+var bg=document.getElementById('bg'),bx=bg.getContext('2d'),dots=[];
+function sizeCv(){bg.width=innerWidth;bg.height=innerHeight;fx.width=innerWidth;fx.height=innerHeight}
+var fx=document.getElementById('fx'),fxc=fx.getContext('2d'),conf=[];
+sizeCv();addEventListener('resize',sizeCv);
+for(var i=0;i<46;i++)dots.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2+.5,s:Math.random()*.4+.1,a:Math.random()});
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function loop(){
+  bx.clearRect(0,0,bg.width,bg.height);
+  if(state.particles&&!reduce){bx.fillStyle=state.accent;dots.forEach(function(d){d.y-=d.s;d.a+=.01;if(d.y<-5){d.y=bg.height+5;d.x=Math.random()*bg.width}bx.globalAlpha=.15+.25*Math.abs(Math.sin(d.a));bx.beginPath();bx.arc(d.x,d.y,d.r,0,6.3);bx.fill()});bx.globalAlpha=1}
+  fxc.clearRect(0,0,fx.width,fx.height);
+  conf=conf.filter(function(c){return c.y<fx.height+20});
+  conf.forEach(function(c){c.vy+=.12;c.x+=c.vx;c.y+=c.vy;c.rot+=c.vr;fxc.save();fxc.translate(c.x,c.y);fxc.rotate(c.rot);fxc.fillStyle=c.col;fxc.fillRect(-c.w/2,-c.h/2,c.w,c.h);fxc.restore()});
+  requestAnimationFrame(loop)}
+loop();
+function confetti(n){if(reduce)return;var cols=[state.accent,mix(state.accent,.5),'#ffffff','#4cc38a','#e5534b'];
+  for(var i=0;i<(n||120);i++)conf.push({x:innerWidth/2+(Math.random()-.5)*120,y:innerHeight*.35,vx:(Math.random()-.5)*10,vy:-Math.random()*9-2,w:6+Math.random()*6,h:3+Math.random()*5,rot:Math.random()*6,vr:(Math.random()-.5)*.4,col:cols[i%cols.length]})}
+
+/* ============ HESAPLAMA ============ */
+function table(){
+  var m={},order=[];
+  state.players.forEach(function(p){m[p.id]={id:p.id,name:p.name,emoji:p.emoji,o:0,w:0,we:0,wp:0,l:0,gf:0,ga:0,pts:+p.adj||0,form:[]};order.push(m[p.id])});
+  var fl=state.fixtures.filter(function(f){return f.done}).sort(function(a,b){return (a.week||0)-(b.week||0)});
+  fl.forEach(function(f){
+    var a=m[f.home],b=m[f.away];if(!a||!b||f.home===f.away)return;
+    var hs=+f.hs||0,as=+f.as||0;a.o++;b.o++;a.gf+=hs;a.ga+=as;b.gf+=as;b.ga+=hs;
+    var w,l,meth=f.method||'90';
+    if(hs>as){w=a;l=b}else if(as>hs){w=b;l=a}
+    else{ if(f.pw==='home'){w=a;l=b}else if(f.pw==='away'){w=b;l=a}else return; meth='PEN' }
+    if(meth==='ET'){w.we++;w.pts+=2}else if(meth==='PEN'){w.wp++;w.pts+=1}else{w.w++;w.pts+=3}
+    l.l++;w.form.push('w');l.form.push('l');
+  });
+  order.sort(function(x,y){return y.pts-x.pts||(y.gf-y.ga)-(x.gf-x.ga)||y.gf-x.gf||x.name.localeCompare(y.name,'tr')});
+  return order;
+}
+function winnerOf(f){
+  if(!f.done)return '';var hs=+f.hs||0,as=+f.as||0;
+  if(hs>as)return 'home';if(as>hs)return 'away';return f.pw||'';
+}
+
+/* ============ KAYIT / SENKRON ============ */
+function setDirty(v){dirty=v;var d=document.getElementById('pdot');if(d)d.className='dotd'+(v?' dirty':'');var l=document.getElementById('plbl');if(l)l.textContent=v?'Kaydedilmemiş değişiklik':'Kaydedildi'}
+var rt;function changed(){setDirty(true);clearTimeout(rt);rt=setTimeout(render,250)}
+function save(){
+  state.updatedAt=Date.now();lsSet();
+  if(!DB_URL){setDirty(false);SFX.ok();confetti(50);toast('Kaydedildi (bu cihazda). Herkes için canlı yapmak için DB_URL ayarla.');return}
+  fetch(DB_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)})
+    .then(function(r){if(!r.ok)throw 0;setDirty(false);online=true;SFX.ok();confetti(60);toast('Kaydedildi ✓ Herkese anlık yansıdı');render()})
+    .catch(function(){SFX.err();toast('Sunucuya yazılamadı. DB_URL ve kuralları kontrol et.')});
+}
+function pull(){
+  if(!DB_URL||(admin&&dirty))return;
+  fetch(DB_URL+(DB_URL.indexOf('?')>-1?'&':'?')+'t='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+    online=true;
+    if(d&&d.updatedAt&&d.updatedAt>state.updatedAt){
+      var old=state.champion;state=norm(d);lsSet();render();
+      if(state.champion&&state.champion!==old){SFX.fanfare();confetti(160)}else if(!admin)toast('🔄 Güncellendi');
+    }else updFoot();
+  }).catch(function(){online=false;updFoot()});
+}
+function updFoot(){var f=document.getElementById('liveflag');if(f){f.className='live'+(online?'':' off')}}
+
+/* ============ ANA SAYFA ============ */
+var CREST='<svg class="crest" id="crest" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5d77a"/><stop offset=".6" stop-color="#d4af37"/><stop offset="1" stop-color="#8a6d1c"/></linearGradient></defs><path d="M28 14h44v22c0 17-9 28-22 31C37 64 28 53 28 36z" fill="none" stroke="url(#g)" stroke-width="4"/><path d="M28 22H15c0 14 5 22 15 25M72 22h13c0 14-5 22-15 25" fill="none" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/><path d="M50 67v14M36 86h28" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/><path d="M50 26l4 9 10 1-7.5 6.5 2.3 9.7L50 47l-8.8 5.2 2.3-9.7L36 36l10-1z" fill="url(#g)"/></svg>';
+var app=document.getElementById('app');
+
+function render(){
+  applyTheme();
+  var y=window.pageYOffset||0;app.innerHTML='';
+  var w=h('div',{class:'wrap'});
+  var hero=h('div',{class:'hero fade-in'});var hd=h('div');hd.innerHTML=CREST;hero.appendChild(hd.firstChild);
+  hero.firstChild.addEventListener('click',function(){SFX.whistle();confetti(40)});
+  hero.appendChild(h('div',{class:'eyebrow',text:'Resmî Lig • '+state.season}));
+  hero.appendChild(h('h1',{text:state.title}));
+  hero.appendChild(h('p',{class:'sub',text:state.subtitle}));
+  hero.appendChild(h('div',{class:'divider'}));w.appendChild(hero);
+
+  if(state.champion&&P(state.champion)){
+    w.appendChild(h('div',{class:'champ'},[h('div',{class:'t',text:'🏆 Şampiyon 🏆'}),h('div',{class:'n',text:pname(state.champion)})]));
+  }
+  if(state.showAnnouncement&&state.announcement&&state.announcement.trim())
+    w.appendChild(h('div',{class:'banner fade-in'},[h('b',{text:'📢',style:'color:var(--gold2)'}),h('span',{text:state.announcement})]));
+
+  var tabs=[['table','🏆 Puan Durumu'],['fix','📅 Fikstür'],['stats','⚽ Gol / Asist'],['news','📰 Haberler']];
+  var nav=h('div',{class:'nav'});
+  tabs.forEach(function(t){nav.appendChild(h('button',{class:'tab'+(ui.tab===t[0]?' on':''),text:t[1],'data-nosound':'1',onclick:function(){if(ui.tab!==t[0]){SFX.tab();ui.tab=t[0];render();window.scrollTo(0,0)}}}))});
+  w.appendChild(nav);
+
+  var v=h('div',{class:'view'});
+  if(ui.tab==='table')viewTable(v);else if(ui.tab==='fix')viewFix(v);else if(ui.tab==='stats')viewStats(v);else viewNews(v);
+  w.appendChild(v);
+
+  var foot=h('div',{class:'foot'},[
+    h('div',{},[h('span',{id:'liveflag',class:'live'+(online?'':' off')}),h('span',{text:'Son güncelleme: '+(state.updatedAt>1?fmt(state.updatedAt):'—')})]),
+    admin?null:h('button',{text:'Yönetici girişi',onclick:login})
+  ]);w.appendChild(foot);app.appendChild(w);
+
+  if(admin){
+    app.appendChild(h('div',{class:'fab'},[h('button',{class:'btn primary',text:'⚙️ Yönetim Paneli',onclick:openPanel})]));
+  }
+  window.scrollTo(0,y);
+  setTimeout(function(){document.querySelectorAll('.bar i').forEach(function(e){e.style.width=e.dataset.w})},60);
+  document.querySelectorAll('[data-count]').forEach(function(e){countUp(e)});
+}
+function countUp(el){var to=+el.dataset.count,n=0,st=Math.max(1,Math.ceil(to/18));if(to<=0||reduce){el.textContent=to;return}
+  var t=setInterval(function(){n+=st;if(n>=to){n=to;clearInterval(t)}el.textContent=n},28)}
+
+function viewTable(v){
+  v.appendChild(h('div',{class:'sec-title',text:'Puan Durumu'}));
+  var rows=table();
+  if(!rows.length){v.appendChild(h('div',{class:'empty',text:'Henüz oyuncu yok.'}));return}
+  var t=h('table'),th=h('thead'),tr=h('tr');
+  [['#','c-rank'],['Oyuncu','nm'],['O','c-n'],['G','c-n'],['M','c-n'],['AV','c-n'],['P','c-p']].forEach(function(c){tr.appendChild(h('th',{class:c[1],text:c[0]}))});
+  th.appendChild(tr);t.appendChild(th);var tb=h('tbody');
+  rows.forEach(function(r,i){
+    var tr=h('tr',{class:i===0&&r.o>0?'top1':'',style:'animation-delay:'+(i*60)+'ms',onclick:function(){SFX.whistle();playerModal(r,i+1)}});
+    var form=h('span',{class:'form'},r.form.slice(-5).map(function(x){return h('i',{class:x})}));
+    var av=r.gf-r.ga;
+    tr.appendChild(h('td',{class:'rank',text:i===0&&r.o>0?'👑':String(i+1)}));
+    tr.appendChild(h('td',{class:'nm'},[(r.emoji?r.emoji+' ':'')+r.name,form]));
+    tr.appendChild(h('td',{text:String(r.o)}));
+    tr.appendChild(h('td',{text:String(r.w+r.we+r.wp)}));
+    tr.appendChild(h('td',{text:String(r.l)}));
+    tr.appendChild(h('td',{text:(av>0?'+':'')+av}));
+    tr.appendChild(h('td',{class:'pts','data-count':String(r.pts),text:'0'}));
+    tb.appendChild(tr)});
+  t.appendChild(tb);v.appendChild(h('div',{class:'table-wrap'},[t]));
+  v.appendChild(h('div',{class:'legend',text:'O: Oynanan • G: Galibiyet • M: Mağlubiyet • AV: Averaj • P: Puan. Detay için oyuncuya dokun.'}));
+}
+function playerModal(r,rank){
+  var m;
+  var mine=state.fixtures.filter(function(f){return f.done&&(f.home===r.id||f.away===r.id)}).sort(function(a,b){return b.week-a.week});
+  var d=h('div',{class:'dialog'},[
+    h('h2',{text:(r.emoji?r.emoji+' ':'')+r.name}),h('p',{text:rank+'. sırada • '+r.pts+' puan'}),
+    h('div',{class:'stat'},[
+      h('div',{},[h('b',{text:String(r.w)}),h('span',{text:'90 dk G'})]),
+      h('div',{},[h('b',{text:String(r.we)}),h('span',{text:'Uzatma G'})]),
+      h('div',{},[h('b',{text:String(r.wp)}),h('span',{text:'Penaltı G'})]),
+      h('div',{},[h('b',{text:String(r.l)}),h('span',{text:'Mağlubiyet'})]),
+      h('div',{},[h('b',{text:String(r.gf)}),h('span',{text:'Atılan'})]),
+      h('div',{},[h('b',{text:String(r.ga)}),h('span',{text:'Yenilen'})])
+    ]),
+    h('div',{},mine.slice(0,6).map(function(f){
+      var home=f.home===r.id,opp=home?f.away:f.home,won=winnerOf(f)===(home?'home':'away');
+      return h('div',{class:'lrow'},[h('div',{class:'top'},[h('span',{text:'H'+f.week+' • '+pname(opp)}),h('b',{text:(home?f.hs+'-'+f.as:f.as+'-'+f.hs)+(won?' ✅':' ❌')})])])})),
+    h('div',{class:'btns'},[h('button',{class:'btn',text:'Kapat',onclick:function(){m.remove()}})])
+  ]);
+  m=h('div',{class:'modal',onclick:function(e){if(e.target===m)m.remove()}},[d]);document.body.appendChild(m);
+}
+function viewFix(v){
+  v.appendChild(h('div',{class:'sec-title',text:'Fikstür & Sonuçlar'}));
+  if(!state.fixtures.length){v.appendChild(h('div',{class:'empty',text:'Henüz maç eklenmedi.'}));return}
+  var weeks={};state.fixtures.forEach(function(f){(weeks[f.week]=weeks[f.week]||[]).push(f)});
+  Object.keys(weeks).map(Number).sort(function(a,b){return a-b}).forEach(function(wk){
+    v.appendChild(h('div',{class:'week',text:wk+'. HAFTA'}));
+    weeks[wk].forEach(function(f,i){
+      var win=winnerOf(f),meth=f.method==='ET'?'UZATMA':f.method==='PEN'?'PENALTI':'';
+      if(f.done&&f.hs===f.as)meth='PENALTI';
+      var mid=f.done?h('div',{},[h('div',{class:'score',text:f.hs+' - '+f.as}),meth?h('span',{class:'badge',text:meth}):null])
+                    :h('div',{},[h('div',{class:'score vs',text:'VS'}),f.when?h('span',{class:'badge',text:f.when}):null]);
+      v.appendChild(h('div',{class:'card match fade-in',style:'animation-delay:'+(i*70)+'ms'},[
+        h('div',{class:'tm'+(win==='home'?' w':''),text:pname(f.home)}),mid,h('div',{class:'tm r'+(win==='away'?' w':''),text:pname(f.away)})]));
+    });
+  });
+}
+function viewStats(v){
+  function board(title,key,icon){
+    var list=state.scorers.filter(function(s){return (+s[key]||0)>0}).sort(function(a,b){return (+b[key])-(+a[key])});
+    v.appendChild(h('div',{class:'sec-title',text:title}));
+    if(!list.length){v.appendChild(h('div',{class:'empty',text:'Henüz veri yok.'}));return}
+    var max=+list[0][key],c=h('div',{class:'card'});
+    list.forEach(function(s,i){
+      c.appendChild(h('div',{class:'lrow'},[
+        h('div',{class:'top'},[h('span',{text:(['🥇','🥈','🥉'][i]||(i+1)+'.')+' '+s.name+(s.player&&P(s.player)?'  ('+P(s.player).name+')':'')}),h('b',{text:icon+' '+s[key]})]),
+        h('div',{class:'bar'},[h('i',{'data-w':Math.round((+s[key])/max*100)+'%'})])]))});
+    v.appendChild(c);
+  }
+  board('Gol Krallığı','goals','⚽');board('Asist Krallığı','assists','🎯');
+}
+function viewNews(v){
+  v.appendChild(h('div',{class:'sec-title',text:'Haberler & Duyurular'}));
+  if(!state.news.length){v.appendChild(h('div',{class:'empty',text:'Haber yok.'}));return}
+  state.news.slice().sort(function(a,b){return (b.pin?1:0)-(a.pin?1:0)||b.date-a.date}).forEach(function(n,i){
+    v.appendChild(h('div',{class:'card news fade-in'+(n.pin?' pin':''),style:'animation-delay:'+(i*60)+'ms'},[
+      h('div',{class:'d',text:(n.pin?'📌 ':'')+fmt(n.date)}),h('div',{text:n.text})]))});
+}
+
+/* ============ YÖNETİCİ GİRİŞİ ============ */
+function modalDlg(build){var m;var d=build(function(){m.remove()});m=h('div',{class:'modal'},[d]);document.body.appendChild(m);return m}
+function login(){
+  var first=!state.passHash;
+  modalDlg(function(close){
+    var i1=h('input',{type:'password',placeholder:first?'Yeni şifre belirle':'Şifre',autocomplete:'current-password'});
+    var i2=first?h('input',{type:'password',placeholder:'Şifre tekrar',style:'margin-top:8px'}):null;
+    var err=h('div',{class:'err'});var dlg;
+    function go(){
+      if(first){
+        if(i1.value.length<4){err.textContent='En az 4 karakter.';SFX.err();return}
+        if(i1.value!==i2.value){err.textContent='Şifreler uyuşmuyor.';SFX.err();return}
+        hash(i1.value).then(function(hx){state.passHash=hx;enter();dirty=true;close()});
+      }else hash(i1.value).then(function(hx){
+        if(hx===state.passHash){enter();close()}else{err.textContent='Şifre yanlış.';SFX.err();dlg.classList.remove('shake');void dlg.offsetWidth;dlg.classList.add('shake')}});
+    }
+    i1.addEventListener('keydown',function(e){if(e.key==='Enter'&&!i2)go()});
+    dlg=h('div',{class:'dialog'},[h('h2',{text:first?'Yönetici Şifresi Oluştur':'Yönetici Girişi'}),
+      h('p',{text:first?'İlk kurulum: şifreni belirle. Sonra “Kaydet”e basmayı unutma.':'Lig yönetim paneline eriş.'}),
+      i1,i2,err,h('div',{class:'btns'},[h('button',{class:'btn',text:'Vazgeç',onclick:close}),h('button',{class:'btn primary',text:first?'Oluştur':'Giriş',onclick:go})])]);
+    setTimeout(function(){i1.focus()},50);return dlg});
+}
+function enter(){admin=true;try{sessionStorage.setItem(SS_ADMIN,'1')}catch(e){}SFX.ok();render();openPanel()}
+function logout(){admin=false;try{sessionStorage.removeItem(SS_ADMIN)}catch(e){}closePanel();render()}
+
+/* ============ YÖNETİM PANELİ ============ */
+function closePanel(){if(panelEl){panelEl.remove();panelEl=null}}
+function openPanel(){
+  closePanel();
+  panelEl=h('div',{class:'panel'});document.body.appendChild(panelEl);drawPanel();
+}
+function field(label,el){return h('div',{class:'f'},[h('label',{text:label}),el])}
+function txt(val,fn,ph,type){return h('input',{value:val==null?'':val,placeholder:ph||'',type:type||'text',oninput:function(e){fn(e.target.value)}})}
+function num(val,fn){return h('input',{value:val==null?0:val,type:'number',inputmode:'numeric',oninput:function(e){fn(parseInt(e.target.value,10)||0)}})}
+function sel(opts,val,fn){var s=h('select',{onchange:function(e){fn(e.target.value);}});opts.forEach(function(o){var op=h('option',{value:o[0],text:o[1]});if(o[0]===val)op.selected=true;s.appendChild(op)});return s}
+function playerOpts(blank){var o=blank?[['',blank]]:[];state.players.forEach(function(p){o.push([p.id,(p.emoji?p.emoji+' ':'')+p.name])});return o}
+function askYes(msg,yes){modalDlg(function(close){return h('div',{class:'dialog'},[h('p',{text:msg,style:'color:var(--text);font-size:15px'}),h('div',{class:'btns'},[h('button',{class:'btn',text:'Vazgeç',onclick:close}),h('button',{class:'btn danger',text:'Evet',onclick:function(){close();yes()}})])])})}
+
+function drawPanel(){
+  var keepScroll=panelEl.querySelector('.pb')?panelEl.querySelector('.pb').scrollTop:0;
+  panelEl.innerHTML='';
+  panelEl.appendChild(h('div',{class:'ph'},[
+    h('span',{class:'ttl',text:'⚙️ Yönetim'}),
+    h('span',{style:'font-size:11px;color:var(--muted)'},[h('span',{id:'pdot',class:'dotd'+(dirty?' dirty':'')}),h('span',{id:'plbl',text:dirty?'Kaydedilmemiş değişiklik':'Kaydedildi'})]),
+    h('button',{class:'btn primary sm',text:'💾 Kaydet',onclick:save}),
+    h('button',{class:'btn sm',text:'✕',onclick:closePanel})]));
+  var tabs=[['genel','Genel'],['oyuncu','Oyuncular'],['mac','Maçlar'],['gol','Gol/Asist'],['haber','Haberler'],['ayar','Ayarlar']];
+  var pt=h('div',{class:'pt'});tabs.forEach(function(t){pt.appendChild(h('button',{class:'tab'+(atab===t[0]?' on':''),text:t[1],'data-nosound':'1',onclick:function(){SFX.tab();atab=t[0];drawPanel()}}))});
+  panelEl.appendChild(pt);
+  var pb=h('div',{class:'pb'});panelEl.appendChild(pb);
+  ({genel:pGenel,oyuncu:pOyuncu,mac:pMac,gol:pGol,haber:pHaber,ayar:pAyar})[atab](pb);
+  pb.scrollTop=keepScroll;
+}
+function pGenel(b){
+  b.appendChild(field('Site başlığı',txt(state.title,function(v){state.title=v;changed()})));
+  b.appendChild(field('Alt başlık',txt(state.subtitle,function(v){state.subtitle=v;changed()})));
+  b.appendChild(field('Sezon etiketi',txt(state.season,function(v){state.season=v;changed()})));
+  b.appendChild(field('Duyuru metni',h('textarea',{value:state.announcement,oninput:function(e){state.announcement=e.target.value;changed()}})));
+  b.appendChild(h('label',{class:'sw f'},[h('input',{type:'checkbox',checked:state.showAnnouncement,onchange:function(e){state.showAnnouncement=e.target.checked;changed()}}),'Duyuruyu sitede göster']));
+  b.appendChild(field('Şampiyon ilan et',sel(playerOpts('— Yok —'),state.champion,function(v){state.champion=v;changed();if(v){SFX.fanfare();confetti(160)}})));
+}
+function pOyuncu(b){
+  b.appendChild(h('p',{class:'hint',text:'Puan durumu, girilen maç sonuçlarından otomatik hesaplanır. “Puan düzeltme” ceza (−) veya bonus (+) içindir.'}));
+  state.players.forEach(function(p){
+    b.appendChild(h('div',{class:'ed'},[
+      h('div',{class:'r'},[h('input',{value:p.emoji||'',style:'width:64px;text-align:center',placeholder:'😀',oninput:function(e){p.emoji=e.target.value;changed()}}),txt(p.name,function(v){p.name=v;changed()},'Oyuncu adı')]),
+      h('div',{class:'r'},[h('div',{style:'flex:1'},[h('label',{text:'Puan düzeltme',style:'font-size:11px;color:var(--gold)'}),num(p.adj,function(v){p.adj=v;changed()})]),
+        h('button',{class:'btn danger sm',text:'Sil',style:'align-self:flex-end',onclick:function(){askYes(p.name+' silinsin mi? Maçları da silinir.',function(){
+          state.players=state.players.filter(function(x){return x!==p});state.fixtures=state.fixtures.filter(function(f){return f.home!==p.id&&f.away!==p.id});
+          if(state.champion===p.id)state.champion='';changed();drawPanel()})}})])]))});
+  b.appendChild(h('button',{class:'btn',text:'+ Oyuncu ekle',onclick:function(){state.players.push({id:uid(),name:'Yeni Oyuncu',emoji:'⚽',adj:0});changed();drawPanel()}}));
+}
+function pMac(b){
+  var mx=0;state.fixtures.forEach(function(f){if(f.week>mx)mx=f.week});
+  b.appendChild(h('div',{style:'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px'},[
+    h('button',{class:'btn primary sm',text:'+ Maç ekle',onclick:function(){var a=state.players[0],c=state.players[1];state.fixtures.push({id:uid(),week:Math.max(mx,1),home:a?a.id:'',away:c?c.id:'',hs:0,as:0,method:'90',pw:'',done:false,when:''});changed();drawPanel()}}),
+    h('button',{class:'btn sm',text:'🎲 Otomatik fikstür (tek devre)',onclick:function(){gen(false)}}),
+    h('button',{class:'btn sm',text:'🎲 Çift devre',onclick:function(){gen(true)}})]));
+  var sorted=state.fixtures.slice().sort(function(a,b){return a.week-b.week});
+  sorted.forEach(function(f){
+    var pwBox=h('div',{class:'f',style:(f.hs===f.as?'':'display:none')},[h('label',{text:'Beraberlikte penaltı kazananı'}),sel([['','— seç —'],['home','Ev sahibi'],['away','Deplasman']],f.pw,function(v){f.pw=v;changed()})]);
+    b.appendChild(h('div',{class:'ed'},[
+      h('div',{class:'g3'},[
+        h('div',{},[h('label',{text:'Hafta',style:'font-size:11px;color:var(--gold)'}),num(f.week,function(v){f.week=v;changed()})]),
+        h('div',{style:'grid-column:span 2'},[h('label',{text:'Saat / not',style:'font-size:11px;color:var(--gold)'}),txt(f.when,function(v){f.when=v;changed()},'Örn: Cuma 21:00')])]),
+      h('div',{class:'g2',style:'margin-top:8px'},[sel(playerOpts(),f.home,function(v){f.home=v;changed()}),sel(playerOpts(),f.away,function(v){f.away=v;changed()})]),
+      h('div',{class:'g3',style:'margin-top:8px'},[
+        h('div',{},[h('label',{text:'Ev skor',style:'font-size:11px;color:var(--gold)'}),num(f.hs,function(v){f.hs=v;pwBox.style.display=(f.hs===f.as?'':'none');changed()})]),
+        h('div',{},[h('label',{text:'Dep. skor',style:'font-size:11px;color:var(--gold)'}),num(f.as,function(v){f.as=v;pwBox.style.display=(f.hs===f.as?'':'none');changed()})]),
+        h('div',{},[h('label',{text:'Biçim',style:'font-size:11px;color:var(--gold)'}),sel([['90','90 dk'],['ET','Uzatma'],['PEN','Penaltı']],f.method||'90',function(v){f.method=v;changed()})])]),
+      h('div',{style:'margin-top:8px'},[pwBox]),
+      h('div',{class:'r',style:'margin-top:4px;justify-content:space-between'},[
+        h('label',{class:'sw'},[h('input',{type:'checkbox',checked:f.done,onchange:function(e){f.done=e.target.checked;if(f.done)SFX.whistle();changed()}}),'Oynandı (puana işle)']),
+        h('button',{class:'btn danger sm',text:'Sil',onclick:function(){state.fixtures=state.fixtures.filter(function(x){return x!==f});changed();drawPanel()}})])]))});
+  if(!sorted.length)b.appendChild(h('div',{class:'empty',text:'Henüz maç yok.'}));
+}
+function gen(dbl){
+  askYes('Mevcut fikstür silinip yenisi oluşturulsun mu?',function(){
+    var ids=state.players.map(function(p){return p.id});if(ids.length<2){toast('En az 2 oyuncu gerekli');return}
+    if(ids.length%2)ids.push(null);var n=ids.length,out=[],rounds=n-1,arr=ids.slice();
+    for(var r=0;r<rounds;r++){
+      for(var i=0;i<n/2;i++){var a=arr[i],c=arr[n-1-i];if(a&&c){var hm=(r%2?c:a),aw=(r%2?a:c);out.push({id:uid(),week:r+1,home:hm,away:aw,hs:0,as:0,method:'90',pw:'',done:false,when:''});if(dbl)out.push({id:uid(),week:r+1+rounds,home:aw,away:hm,hs:0,as:0,method:'90',pw:'',done:false,when:''})}}
+      arr.splice(1,0,arr.pop());
+    }
+    state.fixtures=out;changed();drawPanel();SFX.ok()})
+}
+function pGol(b){
+  b.appendChild(h('p',{class:'hint',text:'Gol ve asist krallığı buradan elle girilir.'}));
+  state.scorers.forEach(function(s){
+    b.appendChild(h('div',{class:'ed'},[
+      h('div',{class:'g2'},[txt(s.name,function(v){s.name=v;changed()},'Futbolcu adı'),sel(playerOpts('— Oyuncu —'),s.player||'',function(v){s.player=v;changed()})]),
+      h('div',{class:'g3',style:'margin-top:8px'},[
+        h('div',{},[h('label',{text:'Gol',style:'font-size:11px;color:var(--gold)'}),num(s.goals,function(v){s.goals=v;changed()})]),
+        h('div',{},[h('label',{text:'Asist',style:'font-size:11px;color:var(--gold)'}),num(s.assists,function(v){s.assists=v;changed()})]),
+        h('button',{class:'btn danger sm',text:'Sil',style:'align-self:flex-end',onclick:function(){state.scorers=state.scorers.filter(function(x){return x!==s});changed();drawPanel()}})])]))});
+  b.appendChild(h('button',{class:'btn',text:'+ Futbolcu ekle',onclick:function(){state.scorers.push({id:uid(),name:'',player:'',goals:0,assists:0});changed();drawPanel()}}));
+}
+function pHaber(b){
+  state.news.slice().sort(function(a,b){return b.date-a.date}).forEach(function(n){
+    b.appendChild(h('div',{class:'ed'},[
+      h('textarea',{value:n.text,oninput:function(e){n.text=e.target.value;changed()}}),
+      h('div',{class:'r',style:'margin-top:8px;justify-content:space-between'},[
+        h('label',{class:'sw'},[h('input',{type:'checkbox',checked:n.pin,onchange:function(e){n.pin=e.target.checked;changed()}}),'📌 Sabitle']),
+        h('button',{class:'btn danger sm',text:'Sil',onclick:function(){state.news=state.news.filter(function(x){return x!==n});changed();drawPanel()}})])]))});
+  b.appendChild(h('button',{class:'btn',text:'+ Haber ekle',onclick:function(){state.news.push({id:uid(),text:'Yeni haber…',date:Date.now(),pin:false});changed();drawPanel()}}));
+}
+function pAyar(b){
+  b.appendChild(field('Tema rengi',h('input',{type:'color',value:state.accent,oninput:function(e){state.accent=e.target.value;applyTheme();changed()}})));
+  b.appendChild(h('label',{class:'sw f'},[h('input',{type:'checkbox',checked:state.sound,onchange:function(e){state.sound=e.target.checked;if(state.sound)SFX.ok();changed()}}),'🔊 Ses efektleri']));
+  b.appendChild(h('label',{class:'sw f'},[h('input',{type:'checkbox',checked:state.particles,onchange:function(e){state.particles=e.target.checked;changed()}}),'✨ Arka plan parçacık animasyonu']));
+  b.appendChild(h('div',{class:'ed'},[h('b',{text:'Canlı senkron: '+(DB_URL?'AÇIK ✅':'KAPALI')}),h('p',{class:'hint',text:DB_URL?'Veriler Firebase üzerinden tüm ziyaretçilere ~10 sn içinde yansır.':'Dosyanın başındaki DB_URL satırına Firebase Realtime Database adresini yazarsan değişiklikler herkese anlık yansır. Şu an veriler sadece bu cihazda saklanır.'})]));
+  var pw1=h('input',{type:'password',placeholder:'Yeni şifre'});
+  b.appendChild(field('Şifre değiştir',h('div',{class:'r',style:'display:flex;gap:8px'},[pw1,h('button',{class:'btn sm',text:'Değiştir',onclick:function(){if(pw1.value.length<4){toast('En az 4 karakter');return}hash(pw1.value).then(function(hx){state.passHash=hx;pw1.value='';changed();toast('Şifre değişti. Kaydet’e bas.')})}})])));
+  var ta=h('textarea',{style:'font-family:monospace;font-size:11px;min-height:110px',value:JSON.stringify(state)});
+  b.appendChild(field('Yedek (JSON) — kopyala veya yapıştırıp yükle',ta));
+  b.appendChild(h('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},[
+    h('button',{class:'btn sm',text:'Yedeği yükle',onclick:function(){try{var d=norm(JSON.parse(ta.value));d.updatedAt=Date.now();state=d;changed();toast('Yüklendi. Kaydet’e bas.');drawPanel()}catch(e){SFX.err();toast('Geçersiz JSON')}}}),
+    h('button',{class:'btn danger sm',text:'Her şeyi sıfırla',onclick:function(){askYes('Tüm lig verisi sıfırlansın mı?',function(){var p=state.passHash;state=norm(JSON.parse(JSON.stringify(DEFAULT)));state.passHash=p;changed();drawPanel()})}}),
+    h('button',{class:'btn sm',text:'Çıkış yap',onclick:logout})]));
+}
+
+/* ============ BAŞLAT ============ */
+var loc=lsGet();if(loc)state=norm(loc);
+render();
+if(DB_URL){pull();setInterval(pull,10000)}
+if(admin&&!state.passHash){admin=false}
+document.addEventListener('visibilitychange',function(){if(!document.hidden)pull()});
+})();
+</script>
+</body>
+</html>
